@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"path/filepath"
@@ -30,7 +31,6 @@ import (
 	"time"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
-	"golang.org/x/exp/slog"
 	"golang.org/x/time/rate"
 
 	"github.com/csaf-poc/csaf_distribution/v3/csaf"
@@ -127,16 +127,22 @@ func (m *topicMessages) add(typ MessageType, format string, args ...any) {
 // error adds an error message to this topic.
 func (m *topicMessages) error(format string, args ...any) {
 	m.add(ErrorType, format, args...)
+	// Print messages to notify user what went wrong
+	slog.Error(format, args)
 }
 
 // warn adds a warning message to this topic.
 func (m *topicMessages) warn(format string, args ...any) {
 	m.add(WarnType, format, args...)
+	// Log message to warn user what maybe went wrong
+	slog.Warn(format, args)
 }
 
 // info adds an info message to this topic.
 func (m *topicMessages) info(format string, args ...any) {
 	m.add(InfoType, format, args...)
+	// Log message to notify user what happened
+	slog.Info(format, args)
 }
 
 // use signals that we going to use this topic.
@@ -1241,8 +1247,6 @@ func (p *processor) checkProviderMetadata(domain string) bool {
 		p.badProviderMetadata.warn(
 			"Unexpected situation while loading provider-metadata.json: " +
 				lpmd.Messages[i].Message)
-		// Print messages to notify user what went wrong
-		slog.Warn(lpmd.Messages[i].Message)
 	}
 
 	if !lpmd.Valid() {
