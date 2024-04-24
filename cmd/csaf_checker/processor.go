@@ -252,6 +252,13 @@ func (p *processor) run(domains []string) (*Report, error) {
 		if !p.checkProviderMetadata(d) {
 			// We cannot build a report if the provider metadata cannot be parsed.
 			log.Printf("Could not parse the Provider-Metadata.json of: %s\n", d)
+			// Print messages to notify user what went wrong
+			for _, m := range p.badProviderMetadata {
+				log.Printf("%s: %s", m.Type, m.Text)
+			}
+
+			// Reset messages since we used it? Or is there another usage for this? Will be reset by the next iteration of the outer loop anyway.
+			p.badProviderMetadata.reset()
 			continue
 		}
 		if err := p.checkDomain(d); err != nil {
