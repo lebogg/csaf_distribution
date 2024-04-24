@@ -18,7 +18,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/exp/slog"
 	"io"
 	"log"
 	"net/http"
@@ -31,6 +30,7 @@ import (
 	"time"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"golang.org/x/exp/slog"
 	"golang.org/x/time/rate"
 
 	"github.com/csaf-poc/csaf_distribution/v3/csaf"
